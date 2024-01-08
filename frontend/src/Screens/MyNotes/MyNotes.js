@@ -51,12 +51,13 @@ const MyNotes = ({ search }) => {
       )}
       {loading && <Loading />}
       {loadingDelete && <Loading />}
-      {
+      { notes &&
         notes
-          ?.reverse()
           .filter(filteredNote => 
             filteredNote.title.toLowerCase().includes(search.toLowerCase())
-          ).map(note => {
+          )
+          .reverse()
+          .map(note => {
           return <Accordion key={note._id}>
             <Card style={{margin: 10}}>
               <Card.Header style={{display: 'flex'}}>
