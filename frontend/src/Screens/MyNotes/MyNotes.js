@@ -1,15 +1,16 @@
 import React, { useEffect } from "react";
 import { Accordion, Badge, Button, Card } from "react-bootstrap";
-import MainScreen from "../../components/MainScreen";
+import MainScreen from "../../Components/MainScreen";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deleteNoteAction, listNotes } from "../../actions/notesActions";
-import Loading from "../../components/Loading";
-import ErrorMessage from "../../components/ErrorMessage";
+import Loading from "../../Components/Loading";
+import ErrorMessage from "../../Components/ErrorMessage";
 
-function MyNotes({ history, search }) {
+function MyNotes({ search }) {
   const dispatch = useDispatch();
 
   const noteList = useSelector((state) => state.noteList);
@@ -35,14 +36,16 @@ function MyNotes({ history, search }) {
   const noteUpdate = useSelector((state) => state.noteUpdate);
   const { success: successUpdate } = noteUpdate;
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     dispatch(listNotes());
     if (!userInfo) {
-      history.push("/");
+      navigate("/");
     }
   }, [
     dispatch,
-    history,
+    navigate,
     userInfo,
     successDelete,
     successCreate,
