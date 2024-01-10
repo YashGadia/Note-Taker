@@ -1,34 +1,97 @@
-import { legacy_createStore as createStore, combineReducers, applyMiddleware } from 'redux';
-import { thunk } from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { userLoginReducer, userRegisterReducer, userUpdateReducer } from './reducers/userReducers';
-import { noteCreateReducer, noteDeleteReducer, noteListReducer, noteUpdateReducer } from './reducers/notesReducers';
+import { legacy_createStore as createStore, combineReducers, applyMiddleware, compose } from "redux";
+import { thunk } from "redux-thunk";
+// import { composeWithDevTools } from "redux-devtools-extension";
+import {
+  noteCreateReducer,
+  noteDeleteReducer,
+  noteListReducer,
+  noteUpdateReducer,
+} from "./reducers/notesReducers";
+import {
+  userLoginReducer,
+  userRegisterReducer,
+  userUpdateReducer,
+} from "./reducers/userReducers";
 
 const reducer = combineReducers({
-    // This will contain our reducers
-    userLogin: userLoginReducer,
-    userRegister: userRegisterReducer,
-    noteList: noteListReducer,
-    noteCreate: noteCreateReducer,
-    noteUpdate: noteUpdateReducer,
-    noteDelete: noteDeleteReducer,
-    userUpdate: userUpdateReducer
+  noteList: noteListReducer,
+  userLogin: userLoginReducer,
+  userRegister: userRegisterReducer,
+  noteCreate: noteCreateReducer,
+  noteDelete: noteDeleteReducer,
+  noteUpdate: noteUpdateReducer,
+  userUpdate: userUpdateReducer,
 });
 
-const userInfoFromStorage = localStorage.getItem('userInfo') 
-    ? JSON.parse(localStorage.getItem('userInfo')) 
-    : null
+const userInfoFromStorage = localStorage.getItem("userInfo")
+  ? JSON.parse(localStorage.getItem("userInfo"))
+  : null;
 
-const intialState = { 
-    userLogin: {userInfo: userInfoFromStorage}
- };
+const initialState = {
+  userLogin: { userInfo: userInfoFromStorage },
+};
 
 const middleware = [thunk];
 
 const store = createStore(
-    reducer,
-    intialState,
-    composeWithDevTools(applyMiddleware(...middleware))
+  reducer,
+  initialState,
+  compose(applyMiddleware(...middleware), window.__REDUX_DEVTOOLS_EXTENSION__
+  ? window.__REDUX_DEVTOOLS_EXTENSION__()
+  : f => f)
 );
 
 export default store;
+
+
+
+// import { legacy_createStore as createStore, combineReducers, applyMiddleware, compose } from 'redux';
+// import { thunk } from 'redux-thunk';
+// import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly'; // Updated import path
+
+// import {
+//   noteCreateReducer,
+//   noteDeleteReducer,
+//   noteListReducer,
+//   noteUpdateReducer,
+// } from './reducers/notesReducers';
+// import {
+//   userLoginReducer,
+//   userRegisterReducer,
+//   userUpdateReducer,
+// } from './reducers/userReducers';
+
+// const reducer = combineReducers({
+//   noteList: noteListReducer,
+//   userLogin: userLoginReducer,
+//   userRegister: userRegisterReducer,
+//   noteCreate: noteCreateReducer,
+//   noteDelete: noteDeleteReducer,
+//   noteUpdate: noteUpdateReducer,
+//   userUpdate: userUpdateReducer,
+// });
+
+// const userInfoFromStorage = localStorage.getItem('userInfo')
+//   ? JSON.parse(localStorage.getItem('userInfo'))
+//   : null;
+
+// const initialState = {
+//   userLogin: { userInfo: userInfoFromStorage },
+// };
+
+// const middleware = [thunk];
+
+// let composeEnhancers = compose;
+
+// // Using composeWithDevTools only in development environment
+// if (process.env.NODE_ENV === 'development') {
+//   composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 })(
+//     applyMiddleware(...middleware)
+//   );
+// } else {
+//   composeEnhancers = compose(applyMiddleware(...middleware));
+// }
+
+// const store = createStore(reducer, initialState, composeEnhancers);
+
+// export default store;
