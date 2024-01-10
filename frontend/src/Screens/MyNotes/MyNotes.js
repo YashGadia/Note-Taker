@@ -125,7 +125,7 @@ function MyNotes({ search }) {
                       <footer className="blockquote-footer">
                         Created on{" "}
                         <cite title="Source Title">
-                          {note.createdAt.substring(0, 10)}
+                          {note.createdDate.substring(0, 10)}
                         </cite>
                       </footer>
                     </blockquote>

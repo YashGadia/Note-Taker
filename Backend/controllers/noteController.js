@@ -1,79 +1,97 @@
+// import Note from "../models/noteModel.js";
+// import asyncHandler from "express-async-handler";
+
 const Note = require('../models/noteModel');
 const asyncHandler = require('express-async-handler');
 
-const getNotes = asyncHandler(async(req, res) => {
-    const notes = await Note.find({ user: req.user._id });
-    res.json(notes);
+// @desc    Get logged in user notes
+// @route   GET /api/notes
+// @access  Private
+const getNotes = asyncHandler(async (req, res) => {
+  const notes = await Note.find({ user: req.user._id });
+
+//   console.log(notes);
+  res.json(notes);
 });
 
-const createNote = asyncHandler(async(req, res) => {
-    const {title, content, category} = req.body;
+//@description     Fetch single Note
+//@route           GET /api/notes/:id
+//@access          Public
+const getNoteById = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
 
-    if(!title || !content || !category) {
-        res.status(400);
-        throw new Error('Please fill all the fields');
-    }
-    else {
-        const note = new Note(
-            { 
-                user: req.user._id,
-                title,
-                content,
-                category
-            }
-        );
-        const createdNote = await note.save();
-        res.status(201).json(createdNote);
-    }
+  if (note) {
+    res.json(note);
+  } else {
+    res.status(404).json({ message: "Note not found" });
+  }
+
+  res.json(note);
 });
 
-const getNoteById = asyncHandler(async(req, res) => {
-    const note = await Note.findById(req.params.id);
-    if(note) {
-        res.json(note);
-    }
-    else {
-        res.status(404).json({ message: "Note not found" });
-    }
+//@description     Create single Note
+//@route           GET /api/notes/create
+//@access          Private
+const createNote = asyncHandler(async (req, res) => {
+  const { title, content, category } = req.body;
+
+  if (!title || !content || !category) {
+    res.status(400);
+    throw new Error("Please Fill all the feilds");
+    return;
+  } else {
+    const note = new Note({ user: req.user._id, title, content, category });
+
+    const createdNote = await note.save();
+
+    res.status(201).json(createdNote);
+  }
 });
 
-const updateNote = asyncHandler(async(req, res) => {
-    const { title, content, category } = req.body;
+//@description     Delete single Note
+//@route           GET /api/notes/:id
+//@access          Private
+const deleteNote = asyncHandler(async (req, res) => {
+  const note = await Note.findById(req.params.id);
 
-    const note = await Note.findById(req.params.id);
-    if(note.user.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error("You can't perform this action");
-    }
-    if(note) {
-        note.title = title;
-        note.content = content;
-        note.category = category;
+  if (note.user.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("You can't perform this action");
+  }
 
-        const updatedNote = await note.save();
-        res.json(updatedNote);
-    }
-    else {
-        res.status(404);
-        throw new Error("Note not found");
-    }
+  if (note) {
+    await note.deleteOne();
+    res.json({ message: "Note Removed" });
+  } else {
+    res.status(404);
+    throw new Error("Note not Found");
+  }
 });
 
-const deleteNote = asyncHandler(async(req, res) => {
-    const note = await Note.findById(req.params.id);
+// @desc    Update a note
+// @route   PUT /api/notes/:id
+// @access  Private
+const updateNote = asyncHandler(async (req, res) => {
+  const { title, content, category } = req.body;
 
-    if(note.user.toString() !== req.user._id.toString()) {
-        res.status(401);
-        throw new Error("You can't perform this action");
-    }
-    if(note) {
-        await note.deleteOne();
-        res.json({ message: 'Note removed' });
-    }
-    else {
-        res.status(404);
-        throw new Error("Note not found");
-    }
-})
+  const note = await Note.findById(req.params.id);
 
-module.exports = { getNotes, createNote, getNoteById, updateNote, deleteNote };
+  if (note.user.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("You can't perform this action");
+  }
+
+  if (note) {
+    note.title = title;
+    note.content = content;
+    note.category = category;
+
+    const updatedNote = await note.save();
+    res.json(updatedNote);
+  } else {
+    res.status(404);
+    throw new Error("Note not found");
+  }
+});
+
+module.exports =  { getNoteById, getNotes, createNote, deleteNote, updateNote };
